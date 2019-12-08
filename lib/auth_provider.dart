@@ -1,6 +1,7 @@
 import 'package:Spiral/auth.dart';
 import 'package:flutter/material.dart';
 
+// authorization change notifier
 class AuthProvider extends ChangeNotifier {
   final BaseAuth auth = Auth();
 

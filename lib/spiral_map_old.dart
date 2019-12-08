@@ -96,6 +96,7 @@ class _SpiralMapState extends State<SpiralMap> {
   @override
   Widget build(BuildContext context) {
     return
+
       Stack(
           children: <Widget>[
             GoogleMap(
@@ -105,7 +106,7 @@ class _SpiralMapState extends State<SpiralMap> {
                   target: _center,
                   zoom: 17.0,
                   bearing: 15,
-                  tilt: 45,
+                  tilt: 0,
                 ),
               myLocationEnabled: true,
               markers: _markers,

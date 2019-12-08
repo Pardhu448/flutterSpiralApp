@@ -5,6 +5,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  google_maps_webservice: ^0.0.16
   google_maps_flutter: ^0.5.11
   intl: ^0.15.6
   provider: ^3.0.0
@@ -17,6 +18,7 @@ dependencies:
   cupertino_icons: ^0.1.0
   shrine_images: 1.1.1
 
+  cloud_firestore: 0.12.10+2
   firebase_core: ^0.4.0+9
 
 dev_dependencies:

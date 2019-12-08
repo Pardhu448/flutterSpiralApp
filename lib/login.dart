@@ -15,24 +15,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
-//import 'home.dart';
-//import 'auth.dart';
 
 
 class LoginPage extends StatefulWidget {
 
   LoginPage({this.onSignedIn});
   final VoidCallback onSignedIn;
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
+enum FormType{
+  login,
+  register
+}
 class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
 
   String _username;
   String _password;
+  FormType _formType = FormType.login;
 
   // TODO: Add text editing controllers (101)
   final _usernameController = TextEditingController();
@@ -54,17 +58,42 @@ class _LoginPageState extends State<LoginPage> {
   void validateAndSubmit() async {
     if (validateAndSave()){
      try {
-       var auth = Provider.of<AuthProvider>(context).auth;
-       String userId = await auth.signInWithEmailAndPassword(_username, _password);
-       print('Signed In: ${userId}');
-       // TODO: Navigate to Homepage
-       // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(userId: userId)));
-       widget.onSignedIn();
+         var auth = Provider
+             .of<AuthProvider>(context)
+             .auth;
+
+         if (_formType == FormType.login) {
+         String userId = await auth.signInWithEmailAndPassword(
+             _username, _password);
+         print('Signed In: ${userId}');
+         // TODO: Navigate to Homepage
+         // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(userId: userId)));
+         widget.onSignedIn();
+       }
+       else {
+        String userId = await auth.createUserWithEmailAndPassword(_username, _password);
+        print('Registered As: ${userId}');
+
+        moveToLogin();
+       }
      } catch(e){
         print(e.message);
      }
     }
   }
+  void moveToLogin(){
+    _formKey.currentState.reset();
+    setState(() {
+      _formType = FormType.login;
+    });
+  }
+  void moveToRegister(){
+    _formKey.currentState.reset();
+    setState(() {
+      _formType = FormType.register;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,69 +122,173 @@ class _LoginPageState extends State<LoginPage> {
                children: buildInputs(),
              ),
             ),
-            SizedBox(height: 10.0),
-            Text('Don\'t have an account yet? Register Here'),
             // TODO: Add button bar (101)
-            ButtonBar(
-              // TODO: Add a beveled rectangular border to CANCEL (103)
-              children: buildSubmitButtons(),
-            ),
+            SizedBox(
+              height: 60.0,
+              child: ButtonBar(
+                // TODO: Add a beveled rectangular border to CANCEL (103)
+                children: buildSubmitButtons(),
+              ),
+            )
           ],
         ),
       ),
     );
   }
 
-  List<Widget> buildInputs(){
+  List<Widget> buildRegisterButton(){
     return [
+      FlatButton(
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: Text('Don\'t have an account? Register Here!'),
+        onPressed: () {
+          moveToRegister();
+        },
+      )
+    ];
+  }
+
+  List<Widget> buildLoginButton(){
+    return [
+      FlatButton(
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: Text('Already Have an account? Login Here!'),
+        onPressed: () {
+          moveToLogin();
+        },
+      )
+    ];
+  }
+
+  List<Widget> buildInputs(){
+    if (_formType == FormType.login) {
+      return [
+        TextFormField(
+          controller: _usernameController,
+          decoration: InputDecoration(
+            filled: true,
+            labelText: 'Username/Email',
+          ),
+          validator: (value) =>
+          value.isEmpty
+              ? 'username can\'t be empty'
+              : null,
+          onSaved: (value) => _username = value,
+
+        ),
+        // spacer
+        SizedBox(height: 12.0),
+        // [Password]
+        TextFormField(
+          controller: _passwordController,
+          decoration: InputDecoration(
+            filled: true,
+            labelText: 'Password',
+          ),
+          validator: (value) =>
+          value.isEmpty
+              ? 'password can\'t be empty'
+              : null,
+          obscureText: true,
+          onSaved: (value) => _password = value,
+        ),
+        SizedBox(height: 8.0),
+        ButtonBar(
+          children: buildRegisterButton(),
+        ),
+      ];
+    }
+    else {
+      return [
       TextFormField(
         controller: _usernameController,
         decoration: InputDecoration(
           filled: true,
-          labelText: 'Username',
+          labelText: 'Email',
         ),
-        validator: (value) => value.isEmpty ? 'username can\'t be empty' : null,
+        validator: (value) =>
+        value.isEmpty
+            ? 'email can\'t be empty'
+            : null,
         onSaved: (value) => _username = value,
-
       ),
-      // spacer
-      SizedBox(height: 12.0),
-      // [Password]
-      TextFormField(
-        controller: _passwordController,
-        decoration: InputDecoration(
-          filled: true,
-          labelText: 'Password',
+    // spacer
+    SizedBox(height: 12.0),
+    // [Password]
+    TextFormField(
+    controller: _passwordController,
+    decoration: InputDecoration(
+    filled: true,
+    labelText: 'Password',
+    ),
+    validator: (value) =>
+    value.isEmpty
+    ? 'password can\'t be empty'
+        : null,
+    obscureText: true,
+    onSaved: (value) => _password = value,
+    ),
+     SizedBox(height: 8.0),
+     ButtonBar(
+          children: buildLoginButton(),
         ),
-        validator: (value) => value.isEmpty ? 'password can\'t be empty' : null,
-        obscureText: true,
-        onSaved: (value) => _password = value,
-      ),
-    ];
+      ];
+    }
   }
 
   List<Widget> buildSubmitButtons(){
-     return [
-       FlatButton(
-         child: Text('CANCEL'),
-         onPressed: () {
-           // TODO: Clear the text fields (101)
-           _usernameController.clear();
-           _passwordController.clear();
-         },
-       ),
-       // TODO: Add an elevation to NEXT (103)
-       // TODO: Add a beveled rectangular border to NEXT (103)
-       RaisedButton(
-         child: Text('LOGIN'),
-         onPressed: () {
-           // TODO: Show the next page (101)
-           // validate and submit the credentials
-           validateAndSubmit();
+    if (_formType == FormType.login) {
+      return [
+        FlatButton(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          child: Text('CANCEL'),
+          onPressed: () {
+            // TODO: Clear the text fields (101)
+            _usernameController.clear();
+            _passwordController.clear();
+          },
+        ),
+        // TODO: Add an elevation to NEXT (103)
+        // TODO: Add a beveled rectangular border to NEXT (103)
+        RaisedButton(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          child: Text('LOGIN'),
+          onPressed: () {
+            // TODO: Show the next page (101)
+            // validate and submit the credentials
+            validateAndSubmit();
+          },
+        ),
+      ];
+    }
+    else {
+      return [
+        FlatButton(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          child: Text('CANCEL'),
+          onPressed: () {
+            // TODO: Clear the text fields (101)
+            _usernameController.clear();
+            _passwordController.clear();
+          },
+        ),
+        // TODO: Add an elevation to NEXT (103)
+        // TODO: Add a beveled rectangular border to NEXT (103)
+        RaisedButton(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          child: Text('SUBMIT'),
+          onPressed: () {
+            // TODO: Show the next page (101)
+            // validate and submit the credentials
+            validateAndSubmit();
+          },
+        ),
+      ];
 
-         },
-       ),
-     ];
+    }
+
     }
   }
 // TODO: Add AccentColorOverride (103)
+
+

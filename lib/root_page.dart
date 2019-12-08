@@ -1,15 +1,10 @@
-//import 'dart:ffi';
-
 import 'package:Spiral/auth_provider.dart';
-import 'package:Spiral/selectMeetingPlace.dart';
-import 'package:Spiral/suggestMeetingPlace.dart';
-import 'package:Spiral/spiral_map.dart';
-//import 'package:Spiral/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'login.dart';
-//import 'auth.dart';
-import 'home_page.dart';
+import 'package:Spiral/login.dart';
+import 'package:Spiral/home_page.dart';
+//Root page of the app, where switching between home and login page is done based on
+// authentication status of the user
 
 class RootPage extends StatefulWidget {
 
@@ -50,13 +45,14 @@ class _RootPageState extends State<RootPage> {
   }
 
   @override
+  // ignore: missing_return
   Widget build(BuildContext context){
     switch(_authStatus){
       case AuthStatus.notSignedInd:
         return LoginPage(onSignedIn: _signedIn);
       case AuthStatus.signedIn:
         return HomePage(onSignedOut: _signedOut);
-        //return SuggestionsPage();
     }
+
   }
 }

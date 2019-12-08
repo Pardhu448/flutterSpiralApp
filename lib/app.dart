@@ -14,6 +14,7 @@
 
 //import 'package:Spiral/auth.dart';
 import 'package:Spiral/auth_provider.dart';
+import 'package:Spiral/spiral_map.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,7 @@ class SpiralApp extends StatelessWidget {
     return MaterialApp(
       title: 'SPIRAL',
       // TODO: Change home: to a Backdrop with a HomePage frontLayer (104)
+      // Provide authorization as a service from top
       home: ChangeNotifierProvider<AuthProvider>(
         builder: (context) => AuthProvider(),
         child: RootPage(),
@@ -35,13 +37,12 @@ class SpiralApp extends StatelessWidget {
       // TODO: Make currentCategory field take _currentCategory (104)
       // TODO: Pass _currentCategory for frontLayer (104)
       // TODO: Change backLayer field value to CategoryMenuPage (104)
-      //initialRoute: '/login',
-      //onGenerateRoute: _getRoute,
       // TODO: Add a theme (103)
       theme: ThemeData(
         primaryColor: Color(0xFFFFB300),
         primaryColorLight: Color(0xFFFFE54C),
         primaryColorDark: Color(0xFFC68400),
+        accentColor: Colors.amberAccent,
         primaryTextTheme: TextTheme(
           body1: TextStyle(color: Color(0xFF000000), fontFamily: 'Rubik')
         ),
