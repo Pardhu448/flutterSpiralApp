@@ -23,7 +23,7 @@ class _SpiralMapState extends State<SpiralMap> {
   GoogleMapController mapController;
 
   static final LatLng _center = const LatLng(19.118427, 72.912080);
-  static const String _API_KEY = '{{AIzaSyBHvK437lRhXvxqWROVeT85T1UBt5KFkOQ}}';
+  static const String _API_KEY = '{{Google API key}}';
 
   var _currentLocation;
 
